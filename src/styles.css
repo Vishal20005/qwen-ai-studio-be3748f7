@@ -71,6 +71,11 @@
   --color-brand-cyan: var(--brand-cyan);
   --color-user-from: var(--user-from);
   --color-user-to: var(--user-to);
+  --color-theme-ocean: oklch(0.61 0.2 250);
+  --color-theme-emerald: oklch(0.64 0.16 160);
+  --color-theme-rose: oklch(0.64 0.21 12);
+  --color-theme-amber: oklch(0.72 0.17 72);
+  --color-theme-graphite: oklch(0.43 0.025 260);
   --shadow-glow: 0 0 24px color-mix(in oklab, var(--primary) 22%, transparent);
   --shadow-status: 0 0 10px color-mix(in oklab, var(--status) 55%, transparent);
   --shadow-composer: 0 18px 60px color-mix(in oklab, var(--foreground) 12%, transparent);
@@ -169,6 +174,46 @@
   --user-to: oklch(0.53 0.23 295);
 }
 
+[data-palette="emerald"] {
+  --primary: oklch(0.61 0.16 160);
+  --ring: oklch(0.68 0.13 160);
+  --brand-blue: oklch(0.62 0.16 160);
+  --brand-violet: oklch(0.66 0.14 185);
+  --brand-cyan: oklch(0.72 0.13 145);
+  --user-from: oklch(0.56 0.16 160);
+  --user-to: oklch(0.58 0.14 185);
+}
+
+[data-palette="rose"] {
+  --primary: oklch(0.62 0.21 12);
+  --ring: oklch(0.7 0.13 12);
+  --brand-blue: oklch(0.62 0.21 12);
+  --brand-violet: oklch(0.64 0.2 340);
+  --brand-cyan: oklch(0.72 0.14 35);
+  --user-from: oklch(0.58 0.2 12);
+  --user-to: oklch(0.58 0.19 340);
+}
+
+[data-palette="amber"] {
+  --primary: oklch(0.67 0.17 72);
+  --ring: oklch(0.73 0.13 72);
+  --brand-blue: oklch(0.69 0.17 72);
+  --brand-violet: oklch(0.63 0.16 48);
+  --brand-cyan: oklch(0.76 0.14 92);
+  --user-from: oklch(0.62 0.17 65);
+  --user-to: oklch(0.59 0.16 42);
+}
+
+[data-palette="graphite"] {
+  --primary: oklch(0.44 0.025 260);
+  --ring: oklch(0.61 0.02 260);
+  --brand-blue: oklch(0.48 0.035 250);
+  --brand-violet: oklch(0.42 0.03 290);
+  --brand-cyan: oklch(0.58 0.025 210);
+  --user-from: oklch(0.42 0.03 250);
+  --user-to: oklch(0.35 0.025 280);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
@@ -180,6 +225,10 @@
     font-family: var(--font-sans);
     letter-spacing: 0;
     overflow: hidden;
+  }
+
+  html {
+    transition: background-color 240ms ease, color 240ms ease;
   }
 }
 
