@@ -1,6 +1,6 @@
 import qwenMark from "@/assets/qwen-mark.png.asset.json";
 
-export function EmptyState({ onSelect }: { onSelect: (prompt: string) => void }) {
+export function EmptyState() {
   return (
     <section className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-4 pb-44 pt-14 text-center sm:px-8">
       <div className="relative mb-7 grid size-20 place-items-center overflow-hidden rounded-3xl bg-code shadow-glow before:absolute before:inset-[-16px] before:-z-10 before:rounded-[2rem] before:bg-primary/10 before:blur-xl">

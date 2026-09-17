@@ -30,7 +30,7 @@ export function ChatApp() {
         <ChatHeader title={title} onMenu={() => setMobileOpen(true)} sidebarOpen={sidebarOpen} onSidebarToggle={() => setSidebarOpen((open) => !open)} />
         <div className="relative min-h-0 flex-1 overflow-hidden">
           <div className="h-full overflow-y-auto">
-            {messages.length === 0 ? <EmptyState onSelect={send} /> : <div className="mx-auto flex max-w-3xl flex-col gap-9 px-4 pb-56 pt-8 sm:px-8 sm:pt-12">{messages.map((message) => <ChatMessage key={message.id} message={message} />)}<div className="flex items-center gap-3 pl-11 text-xs text-muted-foreground"><span className="typing-dot" /><span className="typing-dot [animation-delay:150ms]" /><span className="typing-dot [animation-delay:300ms]" /></div></div>}
+            {messages.length === 0 ? <EmptyState /> : <div className="mx-auto flex max-w-3xl flex-col gap-9 px-4 pb-56 pt-8 sm:px-8 sm:pt-12">{messages.map((message) => <ChatMessage key={message.id} message={message} />)}<div className="flex items-center gap-3 pl-11 text-xs text-muted-foreground"><span className="typing-dot" /><span className="typing-dot [animation-delay:150ms]" /><span className="typing-dot [animation-delay:300ms]" /></div></div>}
           </div>
           <MessageComposer webSearch={webSearch} onWebSearch={setWebSearch} onSend={send} />
         </div>
