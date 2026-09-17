@@ -1,12 +1,15 @@
-import { Menu } from "lucide-react";
+import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModelSelector } from "./model-selector";
 
-export function ChatHeader({ title, onMenu }: { title: string; onMenu: () => void }) {
+export function ChatHeader({ title, onMenu, sidebarOpen, onSidebarToggle }: { title: string; onMenu: () => void; sidebarOpen: boolean; onSidebarToggle: () => void }) {
   return (
-    <header className="grid h-16 shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border/70 bg-background/80 px-3 backdrop-blur-xl sm:px-5">
+    <header className="grid h-16 shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border/60 bg-background/70 px-3 backdrop-blur-xl sm:px-5">
       <div className="flex min-w-0 items-center gap-2.5">
         <Button variant="ghost" size="icon" className="shrink-0 rounded-xl md:hidden" onClick={onMenu} aria-label="Open menu"><Menu /></Button>
+        <Button variant="ghost" size="icon" className="hidden shrink-0 rounded-xl md:inline-flex" onClick={onSidebarToggle} aria-label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} title={sidebarOpen ? "Hide sidebar" : "Show sidebar"}>
+          {sidebarOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
+        </Button>
         <h1 className="truncate text-sm font-semibold sm:text-base">{title}</h1>
       </div>
       <div className="flex shrink-0 items-center gap-2">
