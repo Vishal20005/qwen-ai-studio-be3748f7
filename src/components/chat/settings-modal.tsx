@@ -29,7 +29,7 @@ export function SettingsModal({ open, onOpenChange }: { open: boolean; onOpenCha
     document.documentElement.classList.toggle("dark", dark);
   }, [theme]);
   useEffect(() => {
-    document.documentElement.dataset.palette = colorTheme;
+    document.documentElement.dataset["palette"] = colorTheme;
     window.localStorage.setItem("qwen-color-theme", colorTheme);
   }, [colorTheme]);
   return (
