@@ -9,13 +9,13 @@ export type Message = { id: number; role: "user" | "assistant"; content: string;
 export function ChatMessage({ message }: { message: Message }) {
   const [copied, setCopied] = useState(false);
   if (message.role === "user") {
-    return <div className="message-enter flex justify-end"><div className="max-w-[85%] rounded-2xl rounded-br-md bg-linear-to-br from-user-from to-user-to px-4 py-3 text-sm leading-6 text-primary-foreground sm:max-w-[70%]">{message.content}</div></div>;
+    return <div className="message-enter-user flex justify-end"><div className="max-w-[85%] rounded-2xl rounded-br-md bg-linear-to-br from-user-from to-user-to px-4 py-3 text-sm leading-6 text-primary-foreground shadow-sm sm:max-w-[70%]">{message.content}</div></div>;
   }
 
   return (
-    <article className="message-enter flex gap-3 sm:gap-4">
+    <article className="message-enter-assistant flex gap-3 sm:gap-4">
       <div className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-xl bg-linear-to-br from-brand-blue via-brand-violet to-brand-cyan text-primary-foreground shadow-glow"><Sparkles className="size-3.5" /></div>
-      <div className="min-w-0 flex-1">
+      <div className="assistant-reveal min-w-0 flex-1">
         <p className="text-sm leading-7 text-foreground sm:text-[15px]">Article 21 protects the <strong>right to life and personal liberty</strong>. It states that no person shall be deprived of life or personal liberty except according to procedure established by law.</p>
         <p className="mt-3 text-sm leading-7 text-foreground sm:text-[15px]">The Supreme Court has interpreted this broadly, extending it to dignity, privacy, clean environment, legal aid, and a fair trial.</p>
         <div className="mt-4 overflow-hidden rounded-xl border border-border/70 bg-code">
