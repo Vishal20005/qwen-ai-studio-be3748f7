@@ -232,10 +232,16 @@
   }
 }
 
-@keyframes message-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes message-in-user { from { opacity: 0; transform: translate3d(14px, 8px, 0) scale(.98); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
+@keyframes message-in-assistant { from { opacity: 0; transform: translate3d(-10px, 10px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+@keyframes response-reveal { from { opacity: 0; clip-path: inset(0 0 14% 0); } to { opacity: 1; clip-path: inset(0); } }
+@keyframes typing-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes typing { 0%, 60%, 100% { opacity: .35; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
 
-@utility message-enter { animation: message-in 320ms ease-out both; }
+@utility message-enter-user { animation: message-in-user 300ms cubic-bezier(.22, 1, .36, 1) both; }
+@utility message-enter-assistant { animation: message-in-assistant 380ms cubic-bezier(.22, 1, .36, 1) both; }
+@utility assistant-reveal { animation: response-reveal 480ms 90ms ease-out both; }
+@utility typing-enter { animation: typing-in 220ms ease-out both; }
 @utility typing-dot { width: 0.375rem; height: 0.375rem; border-radius: 999px; background: var(--color-muted-foreground); animation: typing 1.2s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {

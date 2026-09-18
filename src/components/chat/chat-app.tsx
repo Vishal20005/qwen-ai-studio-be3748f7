@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatHeader } from "./chat-header";
@@ -20,8 +20,27 @@ export function ChatApp() {
   const [title, setTitle] = useState("New Conversation");
   const [messages, setMessages] = useState<Message[]>([]);
   const [webSearch, setWebSearch] = useState(false);
+  const [isResponding, setIsResponding] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const responseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const openConversation = (nextTitle: string) => { setTitle(nextTitle); setMessages(nextTitle === "New Conversation" ? [] : demoMessages); };
-  const send = (text: string) => { setTitle(title === "New Conversation" ? text.slice(0, 38) : title); setMessages([{ id: Date.now(), role: "user", content: text }, { id: Date.now() + 1, role: "assistant", content: "Article 21 protects the right to life and personal liberty.", sources: webSearch }]); };
+  const send = (text: string) => {
+    const messageId = Date.now();
+    setTitle(title === "New Conversation" ? text.slice(0, 38) : title);
+    setMessages((current) => [...current, { id: messageId, role: "user", content: text }]);
+    setIsResponding(true);
+    if (responseTimerRef.current) clearTimeout(responseTimerRef.current);
+    responseTimerRef.current = setTimeout(() => {
+      setMessages((current) => [...current, { id: messageId + 1, role: "assistant", content: "Article 21 protects the right to life and personal liberty.", sources: webSearch }]);
+      setIsResponding(false);
+    }, 700);
+  };
+  useEffect(() => {
+    scrollAreaRef.current?.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages, isResponding]);
+  useEffect(() => () => {
+    if (responseTimerRef.current) clearTimeout(responseTimerRef.current);
+  }, []);
   return (
     <main className="relative flex h-dvh overflow-hidden bg-background text-foreground">
       <div className={sidebarOpen ? "hidden md:block" : "hidden"}><Sidebar onSettings={() => setSettingsOpen(true)} onConversation={openConversation} /></div>
@@ -29,8 +48,8 @@ export function ChatApp() {
       <section className="relative flex min-w-0 flex-1 flex-col">
         <ChatHeader title={title} onMenu={() => setMobileOpen(true)} sidebarOpen={sidebarOpen} onSidebarToggle={() => setSidebarOpen((open) => !open)} />
         <div className="relative min-h-0 flex-1 overflow-hidden">
-          <div className="h-full overflow-y-auto">
-            {messages.length === 0 ? <EmptyState /> : <div className="mx-auto flex max-w-3xl flex-col gap-9 px-4 pb-56 pt-8 sm:px-8 sm:pt-12">{messages.map((message) => <ChatMessage key={message.id} message={message} />)}<div className="flex items-center gap-3 pl-11 text-xs text-muted-foreground"><span className="typing-dot" /><span className="typing-dot [animation-delay:150ms]" /><span className="typing-dot [animation-delay:300ms]" /></div></div>}
+          <div ref={scrollAreaRef} className="h-full overflow-y-auto scroll-smooth">
+            {messages.length === 0 ? <EmptyState /> : <div className="mx-auto flex max-w-3xl flex-col gap-9 px-4 pb-56 pt-8 sm:px-8 sm:pt-12">{messages.map((message) => <ChatMessage key={message.id} message={message} />)}{isResponding && <div className="typing-enter flex items-center gap-3 pl-11 text-xs text-muted-foreground" aria-label="Qwen is responding"><span className="typing-dot" /><span className="typing-dot [animation-delay:150ms]" /><span className="typing-dot [animation-delay:300ms]" /></div>}</div>}
           </div>
           <MessageComposer webSearch={webSearch} onWebSearch={setWebSearch} onSend={send} />
         </div>
