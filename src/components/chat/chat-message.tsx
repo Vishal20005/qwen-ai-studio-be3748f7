@@ -25,6 +25,18 @@ export type Message = {
   streaming?: boolean;
 };
 
+function renderInline(text: string) {
+  return text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={`${part}-${index}`}>{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return <code key={`${part}-${index}`} className="rounded bg-muted px-1 py-0.5 font-mono text-[.9em]">{part.slice(1, -1)}</code>;
+    }
+    return <Fragment key={`${part}-${index}`}>{part}</Fragment>;
+  });
+}
+
 function StreamingContent({ content, streaming }: { content: string; streaming?: boolean }) {
   const blocks = content.split("```");
   return (
@@ -46,23 +58,23 @@ function StreamingContent({ content, streaming }: { content: string; streaming?:
           if (line.startsWith("## "))
             return (
               <h3 key={`${line}-${lineIndex}`} className="pt-1 text-base font-semibold">
-                {line.slice(3)}
+              {renderInline(line.slice(3))}
               </h3>
             );
           if (line.startsWith("# "))
             return (
               <h2 key={`${line}-${lineIndex}`} className="pt-1 text-lg font-semibold">
-                {line.slice(2)}
+              {renderInline(line.slice(2))}
               </h2>
             );
           if (line.startsWith("- "))
             return (
               <div key={`${line}-${lineIndex}`} className="flex gap-2 pl-1">
                 <span className="text-primary">•</span>
-                <span>{line.slice(2)}</span>
+              <span>{renderInline(line.slice(2))}</span>
               </div>
             );
-          return <p key={`${line}-${lineIndex}`}>{line}</p>;
+          return <p key={`${line}-${lineIndex}`}>{renderInline(line)}</p>;
         });
       })}
       {streaming && <span className="streaming-caret" aria-hidden="true" />}
