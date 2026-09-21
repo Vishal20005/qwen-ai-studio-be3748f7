@@ -244,6 +244,31 @@
 @utility typing-enter { animation: typing-in 220ms ease-out both; }
 @utility typing-dot { width: 0.375rem; height: 0.375rem; border-radius: 999px; background: var(--color-muted-foreground); animation: typing 1.2s ease-in-out infinite; }
 
+@keyframes stage-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes stage-pulse { 0%, 100% { opacity: .65; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.05); } }
+@keyframes caret-blink { 0%, 45% { opacity: 1; } 55%, 100% { opacity: .15; } }
+@keyframes skeleton-shimmer { from { transform: translateX(-110%); } to { transform: translateX(260%); } }
+
+@utility chat-stage-row { height: 1.5rem; display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; color: var(--color-muted-foreground); font-size: .75rem; animation: stage-in 220ms ease-out both; transition: opacity 220ms ease, transform 220ms ease; }
+@utility chat-stage-active { color: var(--color-primary); }
+@utility chat-stage-leaving { opacity: 0; transform: translateY(-3px); }
+@utility chat-stage-icon { display: grid; width: 1.25rem; height: 1.25rem; place-items: center; border-radius: .375rem; background: color-mix(in oklab, var(--primary) 12%, transparent); box-shadow: 0 0 14px color-mix(in oklab, var(--primary) 16%, transparent); }
+@utility chat-stage-pulse { animation: stage-pulse 1.5s ease-in-out infinite; }
+@utility streaming-caret { display: inline-block; width: .125rem; height: 1em; margin-left: .2rem; vertical-align: -.12em; border-radius: 999px; background: var(--color-primary); box-shadow: 0 0 8px color-mix(in oklab, var(--primary) 45%, transparent); animation: caret-blink 900ms steps(1, end) infinite; }
+
+.thinking-content-grid { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 240ms ease; }
+.thinking-content-grid.is-open { grid-template-rows: 1fr; }
+.thinking-panel-active { box-shadow: inset 2px 0 0 color-mix(in oklab, var(--primary) 60%, transparent); }
+.connecting-skeleton span { position: relative; overflow: hidden; }
+.connecting-skeleton span::after { content: ""; position: absolute; inset: 0; width: 45%; background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--foreground) 10%, transparent), transparent); animation: skeleton-shimmer 1.45s ease-in-out infinite; }
+
+.stream-scrollbar, .thinking-scrollbar { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--muted-foreground) 55%, transparent) transparent; }
+.stream-scrollbar::-webkit-scrollbar, .thinking-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.stream-scrollbar::-webkit-scrollbar-track, .thinking-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.stream-scrollbar::-webkit-scrollbar-thumb, .thinking-scrollbar::-webkit-scrollbar-thumb { border: 1px solid color-mix(in oklab, var(--border) 80%, transparent); border-radius: 999px; background: color-mix(in oklab, var(--muted-foreground) 50%, transparent); }
+.stream-scrollbar::-webkit-scrollbar-thumb:hover, .thinking-scrollbar::-webkit-scrollbar-thumb:hover { background: color-mix(in oklab, var(--muted-foreground) 80%, transparent); }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+  .thinking-content-grid { transition: none; }
 }
