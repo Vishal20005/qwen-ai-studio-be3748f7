@@ -1,10 +1,4 @@
-import {
-  BookOpenText,
-  BriefcaseBusiness,
-  Code2,
-  Newspaper,
-  type LucideIcon,
-} from "lucide-react";
+import { BookOpenText, BriefcaseBusiness, Code2, Newspaper, type LucideIcon } from "lucide-react";
 
 export type ConversationGroup = {
   label: string;
@@ -89,7 +83,8 @@ export const mockAssistantAnsweringMessage = {
   stage: "answering" as const,
   streaming: true,
   thinking: realisticThinking,
-  content: "## React hooks\nHooks let function components use React features such as state and lifecycle behavior.\n- `useState` stores local values\n- `useEffect` synchronizes with external systems",
+  content:
+    "## React hooks\nHooks let function components use React features such as state and lifecycle behavior.\n- `useState` stores local values\n- `useEffect` synchronizes with external systems",
 };
 
 export const mockAssistantDoneMessage = {

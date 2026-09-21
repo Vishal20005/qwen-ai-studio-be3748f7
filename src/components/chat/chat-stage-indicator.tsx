@@ -39,7 +39,9 @@ export function ChatStageIndicator({ stage }: { stage: MessageStage }) {
       aria-live="polite"
     >
       <span className="chat-stage-icon">
-        <Icon className={`size-3.5 ${stage === "connecting" ? "animate-spin" : active ? "chat-stage-pulse" : ""}`} />
+        <Icon
+          className={`size-3.5 ${stage === "connecting" ? "animate-spin" : active ? "chat-stage-pulse" : ""}`}
+        />
       </span>
       <span>{label}</span>
     </div>
