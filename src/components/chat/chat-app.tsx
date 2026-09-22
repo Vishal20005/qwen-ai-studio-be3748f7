@@ -24,7 +24,7 @@ export function ChatApp() {
   const [webSearch, setWebSearch] = useState(false);
   const [isResponding, setIsResponding] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const responseTimerRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const responseTimerRef = useRef<number[]>([]);
   const clearResponseTimers = () => {
     responseTimerRef.current.forEach((timer) => clearTimeout(timer));
     responseTimerRef.current = [];
@@ -80,7 +80,7 @@ export function ChatApp() {
         <ChatHeader title={title} onMenu={() => setMobileOpen(true)} sidebarOpen={sidebarOpen} onSidebarToggle={() => setSidebarOpen((open) => !open)} />
         <div className="relative min-h-0 flex-1 overflow-hidden">
           <div ref={scrollAreaRef} className="h-full overflow-y-auto scroll-smooth">
-            {messages.length === 0 ? <EmptyState /> : <div className="mx-auto flex max-w-3xl flex-col gap-9 px-4 pb-56 pt-8 sm:px-8 sm:pt-12">{messages.map((message) => <ChatMessage key={message.id} message={message} onStop={message.streaming ? stopGenerating : undefined} />)}{isResponding && <div className="sr-only" aria-live="polite">Qwen is generating a response</div>}</div>}
+            {messages.length === 0 ? <EmptyState /> : <div className="mx-auto flex max-w-3xl flex-col gap-9 px-4 pb-56 pt-8 sm:px-8 sm:pt-12">{messages.map((message) => message.streaming ? <ChatMessage key={message.id} message={message} onStop={stopGenerating} /> : <ChatMessage key={message.id} message={message} />)}{isResponding && <div className="sr-only" aria-live="polite">Qwen is generating a response</div>}</div>}
           </div>
           <MessageComposer webSearch={webSearch} onWebSearch={setWebSearch} onSend={send} />
         </div>
