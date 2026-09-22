@@ -13,6 +13,8 @@ const demoMessages: Message[] = [
   { id: 2, role: "assistant", content: "Article 21 protects the right to life and personal liberty.", sources: true },
 ];
 
+const streamedAnswer = "Article 21 protects the **right to life and personal liberty**. It ensures that no person may be deprived of life or personal liberty except according to a procedure established by law.";
+
 export function ChatApp() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -22,24 +24,53 @@ export function ChatApp() {
   const [webSearch, setWebSearch] = useState(false);
   const [isResponding, setIsResponding] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const responseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const responseTimerRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const clearResponseTimers = () => {
+    responseTimerRef.current.forEach((timer) => clearTimeout(timer));
+    responseTimerRef.current = [];
+  };
+  const stopGenerating = () => {
+    clearResponseTimers();
+    setMessages((current) => current.map((message) =>
+      message.role === "assistant" && message.streaming
+        ? { ...message, stage: "done", streaming: false, content: message.content || "Generation stopped." }
+        : message,
+    ));
+    setIsResponding(false);
+  };
   const openConversation = (nextTitle: string) => { setTitle(nextTitle); setMessages(nextTitle === "New Conversation" ? [] : demoMessages); };
   const send = (text: string) => {
     const messageId = Date.now();
     setTitle(title === "New Conversation" ? text.slice(0, 38) : title);
-    setMessages((current) => [...current, { id: messageId, role: "user", content: text }]);
+    clearResponseTimers();
+    setMessages((current) => [
+      ...current,
+      { id: messageId, role: "user", content: text },
+      { id: messageId + 1, role: "assistant", content: "", stage: "connecting", streaming: true },
+    ]);
     setIsResponding(true);
-    if (responseTimerRef.current) clearTimeout(responseTimerRef.current);
-    responseTimerRef.current = setTimeout(() => {
-      setMessages((current) => [...current, { id: messageId + 1, role: "assistant", content: "Article 21 protects the right to life and personal liberty.", sources: webSearch }]);
+    const updateAssistant = (update: Partial<Message>) => {
+      setMessages((current) => current.map((message) => message.id === messageId + 1 ? { ...message, ...update } : message));
+    };
+    responseTimerRef.current.push(window.setTimeout(() => updateAssistant({ stage: "thinking", thinking: "Understanding the question and identifying the relevant constitutional principle…" }), 420));
+    responseTimerRef.current.push(window.setTimeout(() => updateAssistant({ stage: "answering" }), 920));
+    const words = streamedAnswer.split(" ");
+    words.forEach((_, index) => {
+      responseTimerRef.current.push(window.setTimeout(() => {
+        updateAssistant({ content: words.slice(0, index + 1).join(" ") });
+      }, 1000 + index * 34));
+    });
+    responseTimerRef.current.push(window.setTimeout(() => {
+      updateAssistant({ stage: "done", streaming: false, sources: webSearch });
       setIsResponding(false);
-    }, 700);
+      responseTimerRef.current = [];
+    }, 1100 + words.length * 34));
   };
   useEffect(() => {
     scrollAreaRef.current?.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, isResponding]);
   useEffect(() => () => {
-    if (responseTimerRef.current) clearTimeout(responseTimerRef.current);
+    clearResponseTimers();
   }, []);
   return (
     <main className="relative flex h-dvh overflow-hidden bg-background text-foreground">
@@ -49,7 +80,7 @@ export function ChatApp() {
         <ChatHeader title={title} onMenu={() => setMobileOpen(true)} sidebarOpen={sidebarOpen} onSidebarToggle={() => setSidebarOpen((open) => !open)} />
         <div className="relative min-h-0 flex-1 overflow-hidden">
           <div ref={scrollAreaRef} className="h-full overflow-y-auto scroll-smooth">
-            {messages.length === 0 ? <EmptyState /> : <div className="mx-auto flex max-w-3xl flex-col gap-9 px-4 pb-56 pt-8 sm:px-8 sm:pt-12">{messages.map((message) => <ChatMessage key={message.id} message={message} />)}{isResponding && <div className="typing-enter flex items-center gap-3 pl-11 text-xs text-muted-foreground" aria-label="Qwen is responding"><span className="typing-dot" /><span className="typing-dot [animation-delay:150ms]" /><span className="typing-dot [animation-delay:300ms]" /></div>}</div>}
+            {messages.length === 0 ? <EmptyState /> : <div className="mx-auto flex max-w-3xl flex-col gap-9 px-4 pb-56 pt-8 sm:px-8 sm:pt-12">{messages.map((message) => <ChatMessage key={message.id} message={message} onStop={message.streaming ? stopGenerating : undefined} />)}{isResponding && <div className="sr-only" aria-live="polite">Qwen is generating a response</div>}</div>}
           </div>
           <MessageComposer webSearch={webSearch} onWebSearch={setWebSearch} onSend={send} />
         </div>
