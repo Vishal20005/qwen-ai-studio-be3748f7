@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Brain, Check, LoaderCircle } from "lucide-react";
+import { Brain, Check, Search, Sparkles } from "lucide-react";
 import type { MessageStage } from "./chat-message";
 
 const stageDetails = {
-  connecting: { label: "Connecting to model…", icon: LoaderCircle },
-  thinking: { label: "Reasoning…", icon: Brain },
-  answering: { label: "Composing answer…", icon: Brain },
+  connecting: { label: "Searching…", icon: Search },
+  thinking: { label: "Thinking…", icon: Brain },
+  answering: { label: "Generating…", icon: Sparkles },
   done: { label: "Complete", icon: Check },
 } satisfies Record<MessageStage, { label: string; icon: typeof Brain }>;
 
@@ -40,7 +40,7 @@ export function ChatStageIndicator({ stage }: { stage: MessageStage }) {
     >
       <span className="chat-stage-icon">
         <Icon
-          className={`size-3.5 ${stage === "connecting" ? "animate-spin" : active ? "chat-stage-pulse" : ""}`}
+          className={`size-3.5 ${active ? "chat-stage-pulse" : ""}`}
         />
       </span>
       <span>{label}</span>

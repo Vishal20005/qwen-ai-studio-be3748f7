@@ -4,6 +4,7 @@ import {
   ChevronDown,
   Clipboard,
   RefreshCw,
+  Square,
   Sparkles,
   ThumbsDown,
   ThumbsUp,
@@ -128,8 +129,21 @@ function ThinkingPanel({ message }: { message: Message }) {
   );
 }
 
-export function ChatMessage({ message }: { message: Message }) {
+export function ChatMessage({ message, onStop }: { message: Message; onStop?: () => void }) {
   const [copied, setCopied] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
+  const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
+
+  const copyResponse = () => {
+    navigator.clipboard?.writeText(message.content).catch(() => undefined);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1400);
+  };
+
+  const previewRegenerate = () => {
+    setRegenerating(true);
+    window.setTimeout(() => setRegenerating(false), 650);
+  };
   if (message.role === "user") {
     return (
       <div className="message-enter-user flex justify-end">
@@ -142,7 +156,7 @@ export function ChatMessage({ message }: { message: Message }) {
 
   return (
     <article className="message-enter-assistant flex gap-3 sm:gap-4">
-      <div className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-xl bg-linear-to-br from-brand-blue via-brand-violet to-brand-cyan text-primary-foreground shadow-glow">
+      <div className={`assistant-avatar mt-0.5 grid size-8 shrink-0 place-items-center rounded-xl bg-linear-to-br from-brand-blue via-brand-violet to-brand-cyan text-primary-foreground shadow-glow ${message.streaming ? "is-generating" : ""}`}>
         <Sparkles className="size-3.5" />
       </div>
       <div className="assistant-reveal min-w-0 flex-1">
@@ -175,12 +189,12 @@ export function ChatMessage({ message }: { message: Message }) {
                   size="sm"
                   className="h-7 px-2"
                   onClick={() => {
-                    navigator.clipboard?.writeText(message.content);
-                    setCopied(true);
+                    copyResponse();
                   }}
+                  aria-label={copied ? "Copied response" : "Copy code"}
                 >
-                  {copied ? <Check /> : <Clipboard />}
-                  {copied ? "Copied" : "Copy"}
+                  <span className={copied ? "copy-success" : ""}>{copied ? <Check /> : <Clipboard />}</span>
+                  <span className={copied ? "copy-success" : ""}>{copied ? "Copied" : "Copy"}</span>
                 </Button>
               </div>
               <pre className="overflow-x-auto p-4 text-xs leading-6 text-code-foreground">
@@ -203,37 +217,53 @@ export function ChatMessage({ message }: { message: Message }) {
             </div>
           </div>
         )}
-        <div className="mt-3 flex items-center gap-1 text-muted-foreground">
+        <div className="mt-3 flex min-h-8 flex-wrap items-center gap-1 text-muted-foreground">
+          {message.streaming && onStop && (
+            <Button
+              variant="soft"
+              size="sm"
+              className="stop-generating mr-1 h-8"
+              onClick={onStop}
+            >
+              <Square className="size-3 fill-current" />
+              Stop generating
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="icon"
             className="size-8 rounded-lg"
             aria-label="Copy response"
-            onClick={() => navigator.clipboard?.writeText(message.content)}
+            onClick={copyResponse}
           >
-            <Clipboard />
+            <span className={copied ? "copy-success text-primary" : ""}>{copied ? <Check /> : <Clipboard />}</span>
           </Button>
           <Button
             variant="ghost"
             size="icon"
             className="size-8 rounded-lg"
             aria-label="Regenerate response"
+            onClick={previewRegenerate}
           >
-            <RefreshCw />
+            <RefreshCw className={regenerating ? "regenerate-spin" : ""} />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="size-8 rounded-lg"
+            className={`size-8 rounded-lg ${feedback === "up" ? "bg-primary/10 text-primary" : ""}`}
             aria-label="Like response"
+            aria-pressed={feedback === "up"}
+            onClick={() => setFeedback((current) => current === "up" ? null : "up")}
           >
             <ThumbsUp />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="size-8 rounded-lg"
+            className={`size-8 rounded-lg ${feedback === "down" ? "bg-primary/10 text-primary" : ""}`}
             aria-label="Dislike response"
+            aria-pressed={feedback === "down"}
+            onClick={() => setFeedback((current) => current === "down" ? null : "down")}
           >
             <ThumbsDown />
           </Button>

@@ -12,7 +12,7 @@ export function MessageComposer({ webSearch, onWebSearch, onSend }: ComposerProp
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-linear-to-t from-background via-background/95 to-transparent px-3 pb-3 pt-12 sm:px-6 sm:pb-5">
       <div className="pointer-events-auto mx-auto max-w-3xl">
         {webSearch && <div className="mb-2 ml-1 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary"><span className="size-1.5 rounded-full bg-primary shadow-glow" />Web search enabled</div>}
-        <div className="rounded-2xl border border-border/80 bg-composer/90 p-2 shadow-composer backdrop-blur-xl focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10">
+        <div className="composer-shell rounded-2xl border border-border/80 bg-composer/90 p-2 shadow-composer backdrop-blur-xl">
           <textarea value={value} onChange={(e) => setValue(e.target.value)} onKeyDown={onKeyDown} rows={2} placeholder="Ask Qwen anything..." className="max-h-36 min-h-12 w-full resize-none bg-transparent px-2 py-2 text-sm text-foreground outline-hidden placeholder:text-muted-foreground" />
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1">
