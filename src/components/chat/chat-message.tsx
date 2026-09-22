@@ -135,7 +135,7 @@ export function ChatMessage({ message, onStop }: { message: Message; onStop?: ()
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
 
   const copyResponse = () => {
-    navigator.clipboard?.writeText(message.content);
+    navigator.clipboard?.writeText(message.content).catch(() => undefined);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1400);
   };
