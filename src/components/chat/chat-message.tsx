@@ -5,12 +5,13 @@ import {
   Clipboard,
   RefreshCw,
   Square,
-  Sparkles,
   ThumbsDown,
   ThumbsUp,
 } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Message as AIMessage, MessageContent, MessageResponse } from "@/components/ai-elements/message";
+import qwenMark from "@/assets/qwen-mark.png.asset.json";
 import { sources } from "@/data/mock-chat";
 import { ChatStageIndicator } from "./chat-stage-indicator";
 import { SourceCard } from "./source-card";
@@ -46,45 +47,9 @@ function renderInline(text: string) {
 }
 
 function StreamingContent({ content, streaming }: { content: string; streaming?: boolean }) {
-  const blocks = content.split("```");
   return (
-    <div className="space-y-3 text-sm leading-7 text-foreground sm:text-[15px]">
-      {blocks.map((block, blockIndex) => {
-        if (blockIndex % 2 === 1) {
-          const [language, ...codeLines] = block.replace(/^\n/, "").split("\n");
-          return (
-            <pre
-              key={`${language}-${blockIndex}`}
-              className="stream-scrollbar overflow-x-auto rounded-lg border border-border/70 bg-code p-4 text-xs leading-6 text-code-foreground"
-            >
-              <code>{codeLines.join("\n")}</code>
-            </pre>
-          );
-        }
-        return block.split("\n").map((line, lineIndex) => {
-          if (!line) return null;
-          if (line.startsWith("## "))
-            return (
-              <h3 key={`${line}-${lineIndex}`} className="pt-1 text-base font-semibold">
-                {renderInline(line.slice(3))}
-              </h3>
-            );
-          if (line.startsWith("# "))
-            return (
-              <h2 key={`${line}-${lineIndex}`} className="pt-1 text-lg font-semibold">
-                {renderInline(line.slice(2))}
-              </h2>
-            );
-          if (line.startsWith("- "))
-            return (
-              <div key={`${line}-${lineIndex}`} className="flex gap-2 pl-1">
-                <span className="text-primary">•</span>
-                <span>{renderInline(line.slice(2))}</span>
-              </div>
-            );
-          return <p key={`${line}-${lineIndex}`}>{renderInline(line)}</p>;
-        });
-      })}
+    <div className="text-sm leading-7 text-foreground sm:text-[15px]">
+      <MessageResponse isAnimating={streaming}>{content}</MessageResponse>
       {streaming && <span className="streaming-caret" aria-hidden="true" />}
     </div>
   );
@@ -146,20 +111,16 @@ export function ChatMessage({ message, onStop }: { message: Message; onStop?: ()
   };
   if (message.role === "user") {
     return (
-      <div className="message-enter-user flex justify-end">
-        <div className="max-w-[85%] rounded-2xl rounded-br-md bg-linear-to-br from-user-from to-user-to px-4 py-3 text-sm leading-6 text-primary-foreground shadow-sm sm:max-w-[70%]">
-          {message.content}
-        </div>
-      </div>
+      <AIMessage from="user" className="message-enter-user max-w-full"><MessageContent className="max-w-[85%] rounded-xl border border-border bg-secondary px-4 py-3 leading-6 sm:max-w-[70%]">{message.content}</MessageContent></AIMessage>
     );
   }
 
   return (
-    <article className="message-enter-assistant flex gap-3 sm:gap-4">
-      <div className={`assistant-avatar mt-0.5 grid size-8 shrink-0 place-items-center rounded-xl bg-linear-to-br from-brand-blue via-brand-violet to-brand-cyan text-primary-foreground shadow-glow ${message.streaming ? "is-generating" : ""}`}>
-        <Sparkles className="size-3.5" />
+    <AIMessage from="assistant" className="message-enter-assistant max-w-full flex-row gap-3 sm:gap-4">
+      <div className={`assistant-avatar mt-0.5 grid size-8 shrink-0 place-items-center overflow-hidden rounded-lg border border-border bg-code ${message.streaming ? "is-generating" : ""}`}>
+        <img src={qwenMark.url} alt="" className="size-full object-cover" />
       </div>
-      <div className="assistant-reveal min-w-0 flex-1">
+      <MessageContent className="assistant-reveal min-w-0 flex-1 overflow-visible">
         {message.stage && <ChatStageIndicator stage={message.stage} />}
         {message.stage && <ThinkingPanel message={message} />}
         {message.stage === "connecting" && !message.content ? (
@@ -268,7 +229,7 @@ export function ChatMessage({ message, onStop }: { message: Message; onStop?: ()
             <ThumbsDown />
           </Button>
         </div>
-      </div>
-    </article>
+      </MessageContent>
+    </AIMessage>
   );
 }

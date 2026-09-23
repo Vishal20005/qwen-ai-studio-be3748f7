@@ -80,9 +80,9 @@ export function ChatApp() {
         <ChatHeader title={title} onMenu={() => setMobileOpen(true)} sidebarOpen={sidebarOpen} onSidebarToggle={() => setSidebarOpen((open) => !open)} />
         <div className="relative min-h-0 flex-1 overflow-hidden">
           <div ref={scrollAreaRef} className="h-full overflow-y-auto scroll-smooth">
-            {messages.length === 0 ? <EmptyState /> : <div className="mx-auto flex max-w-3xl flex-col gap-9 px-4 pb-56 pt-8 sm:px-8 sm:pt-12">{messages.map((message) => message.streaming ? <ChatMessage key={message.id} message={message} onStop={stopGenerating} /> : <ChatMessage key={message.id} message={message} />)}{isResponding && <div className="sr-only" aria-live="polite">Qwen is generating a response</div>}</div>}
+            {messages.length === 0 ? <EmptyState composer={<MessageComposer embedded webSearch={webSearch} onWebSearch={setWebSearch} onSend={send} />} /> : <div className="mx-auto flex max-w-3xl flex-col gap-9 px-4 pb-48 pt-8 sm:px-8 sm:pt-12">{messages.map((message) => message.streaming ? <ChatMessage key={message.id} message={message} onStop={stopGenerating} /> : <ChatMessage key={message.id} message={message} />)}{isResponding && <div className="sr-only" aria-live="polite">Qwen is generating a response</div>}</div>}
           </div>
-          <MessageComposer webSearch={webSearch} onWebSearch={setWebSearch} onSend={send} />
+          {messages.length > 0 && <MessageComposer webSearch={webSearch} onWebSearch={setWebSearch} onSend={send} />}
         </div>
       </section>
       <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />

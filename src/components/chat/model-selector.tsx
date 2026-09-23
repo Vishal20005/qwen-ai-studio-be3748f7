@@ -45,11 +45,11 @@ export function ModelSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="soft" className="h-9 rounded-xl px-3">
+        <Button variant="ghost" className="h-8 rounded-lg px-2.5">
           <Cpu className="text-primary" /> <span className="hidden sm:inline">{selected}</span><ChevronDown className="size-3.5 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="max-h-[70vh] w-72 overflow-y-auto rounded-xl border-border/70 bg-popover/95 p-2 backdrop-blur-xl">
+      <DropdownMenuContent align="end" className="max-h-[70vh] w-72 overflow-y-auto rounded-lg border-border bg-popover p-2">
         {modelGroups.map((group, groupIndex) => (
           <div key={group.label}>
             {groupIndex > 0 && <DropdownMenuSeparator />}
