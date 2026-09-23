@@ -1,31 +1,38 @@
 import { ArrowUp, Globe2, Mic, Paperclip } from "lucide-react";
-import { useState, type KeyboardEvent } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useRef, useState } from "react";
+import {
+  PromptInput,
+  PromptInputButton,
+  PromptInputFooter,
+  PromptInputSubmit,
+  PromptInputTextarea,
+  PromptInputTools,
+} from "@/components/ai-elements/prompt-input";
 
-type ComposerProps = { webSearch: boolean; onWebSearch: (value: boolean) => void; onSend: (text: string) => void };
+type ComposerProps = { webSearch: boolean; onWebSearch: (value: boolean) => void; onSend: (text: string) => void; embedded?: boolean };
 
-export function MessageComposer({ webSearch, onWebSearch, onSend }: ComposerProps) {
+export function MessageComposer({ webSearch, onWebSearch, onSend, embedded = false }: ComposerProps) {
   const [value, setValue] = useState("");
-  const send = () => { const text = value.trim(); if (!text) return; onSend(text); setValue(""); };
-  const onKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); send(); } };
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => { inputRef.current?.focus(); }, []);
+  const send = (text: string) => { const trimmed = text.trim(); if (!trimmed) return; onSend(trimmed); setValue(""); requestAnimationFrame(() => inputRef.current?.focus()); };
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-linear-to-t from-background via-background/95 to-transparent px-3 pb-3 pt-12 sm:px-6 sm:pb-5">
+    <div className={embedded ? "w-full" : "pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-background/96 px-3 pb-3 pt-6 sm:px-6 sm:pb-5"}>
       <div className="pointer-events-auto mx-auto max-w-3xl">
-        {webSearch && <div className="mb-2 ml-1 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary"><span className="size-1.5 rounded-full bg-primary shadow-glow" />Web search enabled</div>}
-        <div className="composer-shell rounded-2xl border border-border/80 bg-composer/90 p-2 shadow-composer backdrop-blur-xl">
-          <textarea value={value} onChange={(e) => setValue(e.target.value)} onKeyDown={onKeyDown} rows={2} placeholder="Ask Qwen anything..." className="max-h-36 min-h-12 w-full resize-none bg-transparent px-2 py-2 text-sm text-foreground outline-hidden placeholder:text-muted-foreground" />
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1">
-              <Button variant="ghost" size="icon" className="rounded-xl" aria-label="Attach file"><Paperclip /></Button>
-              <Button variant={webSearch ? "soft" : "ghost"} size="sm" className="rounded-xl px-2.5" onClick={() => onWebSearch(!webSearch)}><Globe2 /> <span className="hidden min-[380px]:inline">Web Search</span></Button>
-            </div>
-            <div className="flex items-center gap-1">
-              <Button variant="ghost" size="icon" className="rounded-xl" aria-label="Use voice input"><Mic /></Button>
-              <Button variant="premium" size="icon" className="rounded-xl" onClick={send} disabled={!value.trim()} aria-label="Send message"><ArrowUp /></Button>
-            </div>
-          </div>
-        </div>
-        <p className="mt-2 hidden text-center text-[11px] text-muted-foreground sm:block">Press Enter to send · Shift + Enter for new line</p>
+        <PromptInput className="composer-shell" onSubmit={({ text }) => send(text)}>
+          <PromptInputTextarea ref={inputRef} value={value} onChange={(event) => setValue(event.target.value)} rows={embedded ? 3 : 2} placeholder="Message Qwen…" className="max-h-40 min-h-14 px-4 text-[15px]" />
+          <PromptInputFooter className="px-2 pb-2">
+            <PromptInputTools>
+              <PromptInputButton tooltip="Attach file" aria-label="Attach file"><Paperclip /></PromptInputButton>
+              <PromptInputButton tooltip="Web search" variant={webSearch ? "secondary" : "ghost"} onClick={() => onWebSearch(!webSearch)} className={webSearch ? "text-primary" : ""}><Globe2 /><span className="hidden min-[380px]:inline">Search</span></PromptInputButton>
+            </PromptInputTools>
+            <PromptInputTools>
+              <PromptInputButton tooltip="Voice input" aria-label="Use voice input"><Mic /></PromptInputButton>
+              <PromptInputSubmit disabled={!value.trim()} className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"><ArrowUp /></PromptInputSubmit>
+            </PromptInputTools>
+          </PromptInputFooter>
+        </PromptInput>
+        <p className="mt-2 hidden text-center text-[10px] text-muted-foreground sm:block">Qwen can make mistakes. Check important information.</p>
       </div>
     </div>
   );
