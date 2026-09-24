@@ -49,7 +49,7 @@ function renderInline(text: string) {
 function StreamingContent({ content, streaming }: { content: string; streaming?: boolean }) {
   return (
     <div className="text-sm leading-7 text-foreground sm:text-[15px]">
-      <MessageResponse isAnimating={streaming}>{content}</MessageResponse>
+      <MessageResponse isAnimating={streaming === true}>{content}</MessageResponse>
       {streaming && <span className="streaming-caret" aria-hidden="true" />}
     </div>
   );
