@@ -18,7 +18,7 @@ const colorThemes = [
 type ColorTheme = (typeof colorThemes)[number]["id"];
 
 export function SettingsModal({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
-  const [theme, setTheme] = useState<"system" | "light" | "dark">("system");
+  const [theme, setTheme] = useState<"system" | "light" | "dark">("dark");
   const [colorTheme, setColorTheme] = useState<ColorTheme>("ocean");
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("qwen-color-theme");
